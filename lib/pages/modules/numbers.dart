@@ -5,7 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:learn/utils/const_dimensions.dart';
 import 'package:learn/models/itemdata_model.dart';
 import 'package:learn/utils/constants.dart'; // Adjust the import as per your project structure
-
+import 'package:learn/utils/api_service.dart';
 class ItemTile extends StatelessWidget {
   final int index;
   final List<ItemData> items;
@@ -54,11 +54,14 @@ class ItemTile extends StatelessWidget {
                 builder: (BuildContext context, BoxConstraints constraints) {
                   if (MediaQuery.of(context).orientation ==
                       Orientation.portrait) {
-                    return SvgPicture.asset(
+                    return SvgPicture.network(
                       item.iconAsset,
                       width: MediaQuery.of(context).size.width * 0.2,
                       height: MediaQuery.of(context).size.height * 0.1,
                       alignment: Alignment.center,
+                      placeholderBuilder: (context) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     );
                   } else {
                     return SvgPicture.asset(
@@ -187,11 +190,14 @@ class _PopupDialogState extends State<_PopupDialog> {
                     onTap: () {
                       _speakText(currentItem.description);
                     },
-                    child: SvgPicture.asset(
+                    child: SvgPicture.network(
                       currentItem.iconAsset,
                       width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.height * 0.3,
+                      height: MediaQuery.of(context).size.height * 0.4,
                       alignment: Alignment.center,
+                      placeholderBuilder: (context) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
                   ),
                   const SizedBox(height: ConstantDimensions.heightMedium),
@@ -235,10 +241,33 @@ class NumbersPage extends StatefulWidget {
 
 class _NumbersState extends State<NumbersPage> {
   bool isTimerEnabled = false;
+  bool isLoading = true;
 
+  final ApiService apiService = ApiService();
   List<ItemData> items = AppConstants
       .numberItems; // Ensure you have numberItems list in AppConstants
 
+  @override
+  void initState() {
+    super.initState();
+    _loadItems();
+  }
+
+  Future<void> _loadItems() async {
+    try {
+      final fetchedItems = await apiService.fetchNumberItems();
+      setState(() {
+        items = fetchedItems;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error, maybe show a snackbar
+      print('Error fetching items: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
