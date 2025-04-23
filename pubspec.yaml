@@ -48,6 +48,11 @@ dependencies:
   font_awesome_flutter: ^10.1.0
   shared_preferences: ^2.2.3
   provider: ^6.1.2
+  path_provider_android:
+    path: G:/flutterprojects/learningapp/learn/packages/path_provider_android
+  pigeon: ^25.3.1
+  http: ^1.3.0
+  google_mobile_ads: ^6.0.0
 
 dev_dependencies:
   flutter_test:

@@ -8,6 +8,7 @@ import 'package:learn/utils/const_dimensions.dart';
 import 'package:learn/models/itemdata_model.dart';
 import 'package:learn/utils/constants.dart';
 import 'package:learn/utils/functions.dart';
+import 'package:learn/utils/api_service.dart';
 
 class ItemTile extends StatelessWidget {
   final int index;
@@ -57,11 +58,14 @@ class ItemTile extends StatelessWidget {
                   builder: (BuildContext context, BoxConstraints constraints) {
                 if (MediaQuery.of(context).orientation ==
                     Orientation.portrait) {
-                  return SvgPicture.asset(
+                  return SvgPicture.network(
                     item.iconAsset,
                     width: MediaQuery.of(context).size.width * 0.2,
                     height: MediaQuery.of(context).size.height * 0.1,
                     alignment: Alignment.center,
+                    placeholderBuilder: (context) => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
                   );
                 } else {
                   return SvgPicture.asset(
@@ -184,11 +188,14 @@ class _PopupDialogState extends State<_PopupDialog> {
                     onTap: () {
                       AppFunctions().readName(currentItem.description);
                     },
-                    child: SvgPicture.asset(
+                    child: SvgPicture.network(
                       currentItem.iconAsset,
                       width: MediaQuery.of(context).size.width * 0.5,
                       height: MediaQuery.of(context).size.height * 0.3,
                       alignment: Alignment.center,
+                      placeholderBuilder: (context) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                     ),
                   ),
                   const SizedBox(height: ConstantDimensions.heightMedium),
@@ -230,10 +237,35 @@ class AtoZ extends StatefulWidget {
   State<AtoZ> createState() => _AtoZState();
 }
 
+
 class _AtoZState extends State<AtoZ> {
+  final ApiService apiService = ApiService();
   bool isTimerEnabled = false;
+  bool isLoading = true;
 
   List<ItemData> items = AppConstants.alphabetItems;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadItems();
+  }
+
+  Future<void> _loadItems() async {
+    try {
+      final fetchedItems = await apiService.fetchAlphabetItems();
+      setState(() {
+        items = fetchedItems;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      // Handle error, maybe show a snackbar
+      print('Error fetching items: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

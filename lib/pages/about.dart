@@ -46,7 +46,7 @@ class AboutPage extends StatelessWidget {
               const SizedBox(height: 32.0),
               _buildSectionTitle(context, 'Version: 1.1.0'),
               const SizedBox(height: 8.0),
-              _buildSectionContent(context, 'Developed by: sapatevaibhav'),
+              _buildSectionContent(context, 'Developed by: sarvasoft'),
               const SizedBox(height: 16.0),
               _buildSectionTitle(context, 'Purpose of the App:'),
               const SizedBox(height: 8.0),
